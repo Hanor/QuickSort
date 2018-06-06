@@ -1,15 +1,13 @@
-export class QuickSortIteractive {
-    init;
-    end;
+class QuickSortIteractive {
     changeIndex(vector, i, j) {
         let value = vector[i];
         vector[i] = vector[j];
         vector[j] = value;
     }
-    init(vector, length) {
+    init(vector) {
         this.init = new Date();
-        this.execute(vector, 0, length);
-        this.end();
+        this.execute(vector, 0, vector.length - 1);
+        return this.end();
     }
     execute(vector, start, end) {
         let aux = [];
@@ -37,68 +35,64 @@ export class QuickSortIteractive {
         return new Timed( this.init, this.end );
     }
     partition( vector, start, end ) {
-        let x = arr[h];
+        let x = vector[end];
         let j;
         let i = (start - 1);
      
         for ( j = start; j <= end - 1; j++ ) {
             if (vector[j] <= x) {
                 i++;
-                changeIndex(vector, i, j);
+                this.changeIndex(vector, i, j);
             }
         }
-        changeIndex( vector, i + 1, end );
+        this.changeIndex( vector, i + 1, end );
         return (i + 1);
     }
 }
 
-export class QuickSortRecursive {
-    init;
-    end;
+class QuickSortRecursive {
     changeIndex(vector, i, j) {
         let value = vector[i];
         vector[i] = vector[j];
         vector[j] = value;
     }
-    init(vector, length) {
+    init(vector) {
         this.init = new Date();
-        this.execute(vector, 0, length);
-        this.end();
+        this.execute(vector, 0, vector.length - 1);
+        return this.end();
     }
-    execute(vector, left, rigth) {
-        if ( left < rigth ) {
-            let pivot = ( left + rigth ) / 2;
-            let pos = this.partition( vector, left, rigth, pivot );
+    execute(vector, left, right) {
+        if ( left < right ) {
+            let pivot = Math.trunc(( left + right ) / 2);
+            let pos = this.partition( vector, left, right, pivot );
             this.execute( vector, left, pos - 1 );
-            this.execute( vector, pos + 1, rigth );
+            this.execute( vector, pos + 1, right );
         }
     }
     end() {
         this.end = new Date();
         return new Timed( this.init, this.end );
     }
-    partition(vector, left, rigth, pivot) {
+    partition(vector, left, right, pivot) {
         let pos, i;
-        this.changeIndex( vector, pivot, rigth );
+        this.changeIndex( vector, pivot, right );
         pos = left;
-        for ( i = left; i < rigth; i++ ) {
-            if ( vector[i] < vector[rigth] ) {
+        for ( i = left; i < right; i++ ) {
+            if ( vector[i] < vector[right] ) {
                 this.changeIndex(vector, i, pos);
                 pos++;
             }
         }
-        this.changeIndex( vector, rigth, pos );
+        this.changeIndex( vector, right, pos );
         return pos;
     }
 }
 
-export class QuickSortRandom {
-    init;
-    end;
+class QuickSortRandom {
     init() {
         this.init = new Date();
         this.execute();
-        this.end();
+        return this.end();
     }
     execute() {
         this.end();
@@ -109,24 +103,45 @@ export class QuickSortRandom {
     }
 }
 
-export class Timed {
-    init;
-    final;
-    runned;
-    
+class Timed {
     constructor(init, final) {
         this.init = init;
         this.final = final;
-        this.runned = final - init;
+        this.runned = final.getTime() - init.getTime();
     }
 }
 
-const times = {
-    quickSortIteractive: [],
-    quickSortRecursive: [],
-    quickSortRandom: []
-};
-const quickSortIteractive = new QuickSortIteractive();
-const quickSortRecursive = new QuickSortRecursive();
-const quickSortRandom = new QuickSortRandom();
+class Vectors {
+    static createVectors( length, vectorsNumber ) {
+        const vectors = [];
+        for (let i = 0; i < vectorsNumber; i++) {
+            const vector = [];
+            vectors.push( vector );
+        }
+        for ( let i = 0; i < length; i++ ) {
+            const value = Math.trunc(Math.random() * 50000);
+            for (let j = 0; j < vectorsNumber; j++) {
+                const vector = vectors[j];
+                vector.push( value );
+            }       
+        }
+        return vectors;
+    }
+}
 
+const times = { quickSortIteractive: [], quickSortRecursive: [], quickSortRandom: [] };
+let length = 15000;
+
+for ( let i = 0; i < 50; i++ ) {
+    const vectors = Vectors.createVectors( length, 3 );
+    let quickSortIteractive = new QuickSortIteractive();
+    let quickSortRecursive = new QuickSortRecursive();
+    let quickSortRandom = new QuickSortRandom();
+    let timedInt = quickSortIteractive.init( vectors[0])
+    let timedRec = quickSortRecursive.init( vectors[1] );
+
+    times.quickSortIteractive.push({length: length, runned: timedInt.runned})
+    times.quickSortRecursive.push({length: length, runned: timedRec.runned})
+    length += 10000;
+}
+console.log(times)
