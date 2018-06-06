@@ -161,14 +161,14 @@ class Converter {
         let csv = "Vector Sizes" + separator;
         let keys = Object.keys( times );
         for ( let key of keys ) {
-            csv += key + separator;
+            csv += key + "(em segundos)" + separator;
         }
         csv += "\n";
         for( let i = 0; i < max; i++) {
             csv += sizes[i] + separator;
             for ( let key of keys ) {
                 let algorithm = times[ key ];
-                csv += algorithm[i].runned + "s" + separator
+                csv += algorithm[i].runned + "" + separator
             }
             csv += "\n";
         }
