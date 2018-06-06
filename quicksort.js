@@ -169,7 +169,6 @@ class Converter {
             for ( let key of keys ) {
                 let algorithm = times[ key ];
                 let timed = algorithm[i].runned.toString().replace(".", ",");
-                console.log(timed)
                 csv += timed + "" + separator
             }
             csv += "\n";
