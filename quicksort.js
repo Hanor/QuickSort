@@ -113,6 +113,7 @@ class Timed {
 
 class Vectors {
     static createVectors( length, vectorsNumber ) {
+        console.log("[INFO] Creating the vectors...")
         const vectors = [];
         for (let i = 0; i < vectorsNumber; i++) {
             const vector = [];
@@ -125,23 +126,30 @@ class Vectors {
                 vector.push( value );
             }       
         }
+        console.log("[INFO] Done...")
         return vectors;
     }
 }
 
 const times = { quickSortIteractive: [], quickSortRecursive: [], quickSortRandom: [] };
 let length = 15000;
+let max = 100;
 
-for ( let i = 0; i < 50; i++ ) {
+for ( let i = 0; i < max; i++ ) {
+    console.log("[INFO] " + i + " of " + max)
     const vectors = Vectors.createVectors( length, 3 );
     let quickSortIteractive = new QuickSortIteractive();
     let quickSortRecursive = new QuickSortRecursive();
     let quickSortRandom = new QuickSortRandom();
+    console.log("[INFO] Executing the QuickSortIteractive...");
     let timedInt = quickSortIteractive.init( vectors[0])
-    let timedRec = quickSortRecursive.init( vectors[1] );
+    console.log("[INFO] Executed in:" + timedInt.runned);
+    console.log("[INFO] Executing the QuickSortRecursive...");
+    let timedRec = quickSortRecursive.init( vectors[1]);
+    console.log("[INFO] Executed in:" + timedRec.runned + "\n");
 
     times.quickSortIteractive.push({length: length, runned: timedInt.runned})
     times.quickSortRecursive.push({length: length, runned: timedRec.runned})
     length += 10000;
+    delete vectors ;
 }
-console.log(times)
