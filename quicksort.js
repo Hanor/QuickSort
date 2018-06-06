@@ -168,7 +168,9 @@ class Converter {
             csv += sizes[i] + separator;
             for ( let key of keys ) {
                 let algorithm = times[ key ];
-                csv += algorithm[i].runned + "" + separator
+                let timed = algorithm[i].runned.toString().replace(".", ",");
+                console.log(timed)
+                csv += timed + "" + separator
             }
             csv += "\n";
         }
@@ -180,7 +182,7 @@ const times = { quickSortIteractive: [], quickSortRecursive: [], quickSortRandom
 const converter = new Converter();
 let length = 15000;
 let sizes = [];
-let max = 120;
+let max = 130;
 
 for ( let i = 0; i < max; i++ ) {
     console.log("[INFO] " + i + " of " + max)
