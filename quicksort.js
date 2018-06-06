@@ -89,17 +89,41 @@ class QuickSortRecursive {
 }
 
 class QuickSortRandom {
-    init() {
+    changeIndex(vector, i, j) {
+        let value = vector[i];
+        vector[i] = vector[j];
+        vector[j] = value;
+    }
+    init(vector) {
         this.init = new Date();
-        this.execute();
+        this.pivotToRandom = vector.length - 1;
+        this.execute(vector, 0, vector.length - 1);
         return this.end();
     }
-    execute() {
-        this.end();
+    execute(vector, left, right) {
+        if ( left < right ) {
+            let pivot = Math.trunc( Math.random() * this.pivotToRandom );
+            let pos = this.partition( vector, left, right, pivot );
+            this.execute( vector, left, pos - 1 );
+            this.execute( vector, pos + 1, right );
+        }
     }
     end() {
         this.end = new Date();
         return new Timed( this.init, this.end );
+    }
+    partition(vector, left, right, pivot) {
+        let pos, i;
+        this.changeIndex( vector, pivot, right );
+        pos = left;
+        for ( i = left; i < right; i++ ) {
+            if ( vector[i] < vector[right] ) {
+                this.changeIndex(vector, i, pos);
+                pos++;
+            }
+        }
+        this.changeIndex( vector, right, pos );
+        return pos;
     }
 }
 
@@ -131,9 +155,32 @@ class Vectors {
     }
 }
 
+class Converter {
+    timedToCSV(times, separator, max, sizes) {
+
+        let csv = "Vector Sizes" + separator;
+        let keys = Object.keys( times );
+        for ( let key of keys ) {
+            csv += key + separator;
+        }
+        csv += "\n";
+        for( let i = 0; i < max; i++) {
+            csv += sizes[i] + separator;
+            for ( let key of keys ) {
+                let algorithm = times[ key ];
+                csv += algorithm[i].runned + "s" + separator
+            }
+            csv += "\n";
+        }
+        return csv;
+    }
+}
+
 const times = { quickSortIteractive: [], quickSortRecursive: [], quickSortRandom: [] };
+const converter = new Converter();
 let length = 15000;
-let max = 100;
+let sizes = [];
+let max = 120;
 
 for ( let i = 0; i < max; i++ ) {
     console.log("[INFO] " + i + " of " + max)
@@ -141,15 +188,34 @@ for ( let i = 0; i < max; i++ ) {
     let quickSortIteractive = new QuickSortIteractive();
     let quickSortRecursive = new QuickSortRecursive();
     let quickSortRandom = new QuickSortRandom();
+
     console.log("[INFO] Executing the QuickSortIteractive...");
     let timedInt = quickSortIteractive.init( vectors[0])
     console.log("[INFO] Executed in:" + timedInt.runned);
+
     console.log("[INFO] Executing the QuickSortRecursive...");
     let timedRec = quickSortRecursive.init( vectors[1]);
-    console.log("[INFO] Executed in:" + timedRec.runned + "\n");
+    console.log("[INFO] Executed in:" + timedRec.runned);
 
-    times.quickSortIteractive.push({length: length, runned: timedInt.runned})
-    times.quickSortRecursive.push({length: length, runned: timedRec.runned})
+    console.log("[INFO] Executing the QuickSortRecursiveWithRandom...");
+    let timedRan = quickSortRandom.init( vectors[2]);
+    console.log("[INFO] Executed in:" + timedRan.runned + "\n");
+
+    times.quickSortIteractive.push({length: length, runned: timedInt.runned/1000})
+    times.quickSortRecursive.push({length: length, runned: timedRec.runned/1000})
+    times.quickSortRandom.push({length: length, runned: timedRan.runned/1000})
+    sizes.push( length );
     length += 10000;
     delete vectors ;
 }
+
+const csv = converter.timedToCSV( times, ";", max, sizes );
+const fs = require('fs');
+const path = "";
+const fileName = "quickSortBenchmark.csv"
+fs.writeFile( path + fileName, csv, function(err) {
+    if(err) {
+        return console.log(err);
+    }
+    console.log("The file was saved!");
+}); 
